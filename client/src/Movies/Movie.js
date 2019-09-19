@@ -43,11 +43,11 @@ export default class Movie extends React.Component {
       this.props.history.push('/');
       this.props.handleUpdate();
     })
-    .then(res => {
-      console.log(res);
-            this.props.updateItems(res.data);
+    // .then(res => {
+    //   console.log(res);
+    //         this.props.updateItems(res.data);
 
-    })
+    // }) this part wasnt doing anything the .delete is already happening on the backend on line41
     .catch(err => console.log(err.response));
   };
 
