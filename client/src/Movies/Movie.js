@@ -1,23 +1,27 @@
 import React from "react";
 import axios from "axios";
-import MovieCard from "./MovieCard";
+import MovieCard from "./MovieCard.js";
+import { Route, Link } from 'react-router-dom';
+import UpdateMovieForm from './UpdateMovieForm';
 export default class Movie extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       movie: null
     };
-  }
+  };
 
   componentDidMount() {
     this.fetchMovie(this.props.match.params.id);
   }
 
-  componentWillReceiveProps(newProps) {
-    if (this.props.match.params.id !== newProps.match.params.id) {
-      this.fetchMovie(newProps.match.params.id);
-    }
-  }
+  // componentWillReceiveProps(newProps) {
+  //   if (this.props.match.params.id !== newProps.match.params.id) {
+  //     this.fetchMovie(newProps.match.params.id);
+  //   }
+  // }
+
+
 
   fetchMovie = id => {
     axios
@@ -31,6 +35,22 @@ export default class Movie extends React.Component {
     addToSavedList(this.state.movie);
   };
 
+  deleteMovie = (e, id) => {
+    e.preventDefault();
+    axios
+    .delete(`http://localhost:5000/api/movies/${this.state.movie.id}`)
+    .then(res => {
+      this.props.history.push('/');
+      this.props.handleUpdate();
+    })
+    // .then(res => {
+    //   console.log(res);
+    //         this.props.updateItems(res.data);
+
+    // }) this part wasnt doing anything the .delete is already happening on the backend on line41
+    .catch(err => console.log(err.response));
+  };
+
   render() {
     if (!this.state.movie) {
       return <div>Loading movie information...</div>;
@@ -42,7 +62,16 @@ export default class Movie extends React.Component {
         <div className="save-button" onClick={this.saveMovie}>
           Save
         </div>
-      </div>
+        <button onClick={this.deleteMovie}>Delete Movie</button>
+        <Route
+      path="/update-movie/:id"
+      render={props => {
+        return <UpdateMovieForm {...this.state.movie} />;
+      }}
+      />
+        <Link to={`/update-movie/${this.state.movie.id}`}> Update The Movie</Link>
+          {/* <UpdateMovieForm  movie={this.state.movie}/> */}
+        </div>
     );
   }
 }
